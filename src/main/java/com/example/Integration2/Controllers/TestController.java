@@ -2,18 +2,16 @@ package com.example.Integration2.Controllers;
 
 import com.example.Integration2.AuthenticationAndAuthorization.SalesforceAPI;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.hc.core5.http.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.IOException;
 
-@Controller
+@RestController
 @RequestMapping("/hello")
 public class TestController {
 
@@ -32,24 +30,20 @@ public class TestController {
     }
 
 
-
-// working with client crediantial oauth flow.
-//    @GetMapping("/authorizewithsalesforce")
-//    public void authorizeWithSalesforce() throws IOException, ParseException {
-//        logger.info("Request received at /hello/authorizewithsalesforce endpoint.");
-//        salesforceAPI.authenticate();
-//    }
-
     /*
     OAuth 2.0 Web Server Flow
 
     euta endpoint huna parcha jasle salesforce ko OAUTH-authoraization api hit garcha
-    salesforce ko OAUTH-authorization api is: https://login.salesforce.com/services/oauth2/authorize
-    yo api le authorization code pathaucha in response.
+    salesforce ko OAUTH-authorization api is: org_ko_base_url/services/oauth2/authorize
+    yo api ma hamile hit haney pachi login page ma faldincha hamilai.
+    loign page ma login success garna parcha hamile.
+    login success garepachi hamilai salesforce le hit hancha.
+    salesforce lai hamile callback url ma bhaneko huncham yo url ma hit han malai bhanera. plus yo kura hamile authorization code ko lagi request garda pani as a redirect uri hamle mention gardeko huncham
+    login success bhayo bhaney salesforce le authorization code pathaucha in response.
     authorization code hamile diyeko connected app ma bhayeko call back url ma pathaucha.
     tyo jun url ma authorization code aucha tya bata feri salesforce ko token api ma hit garna parcha by passing
     the received authorization code
-    salesforce ko OAUTH-token api : https://login.salesforce.com/services/oauth2/token
+    salesforce ko OAUTH-token api : org_ko_base_url/services/oauth2/token
     salesforce ko OAUTH-token api le hamilai access token dincha
     basically hamile authorization code lai access token sanga exchange gareko ho.
     access token payepachi hamile salesforce ma bhayeko rest-endpoints haru ma hit garna parney huncha.
@@ -58,27 +52,23 @@ public class TestController {
 
 
     @RequestMapping("/authorizewithsalesforce")
-    public String authorizeWithSalesforce() throws IOException, ParseException {
+    public void authorizeWithSalesforce(HttpServletResponse response) throws IOException, ParseException {
         // Redirect to a view after authentication
         logger.debug("request to get code");
-         String url = salesforceAPI.authenticate();
-        return "redirect:"+url;
+        String url = salesforceAPI.authorize();
+        response.sendRedirect(url);
     }
 
-    @PostMapping("/getauthorizationcode")
+    @RequestMapping("/getauthorizationcode")
     @ResponseBody
-    public void getAuthorizationCode(HttpServletRequest request) throws IOException {
+    public void getAuthorizationCode(HttpServletRequest request) throws IOException, ParseException {
         logger.debug("hello i am hit with code");
+        logger.info("hello i am hit with code");
         String code = request.getParameter("code");
         logger.debug("The code received from authorization is : " + code);
-//        String accessToken = salesforceAPI.makeRequest("!AQkAQGzW980FS5FTnGhoD8qKZ5VvUjzCPrWO6rlcuuZ3wUXE_Eo8pthOQrxWFlNgEPlvJ2wfpf6XwwZ4ARSR_ufgoZ_A_LjC");
-//        logger.info("data from salesforce is :  " + accessToken);
-//        return "data from salesforce is: : " + accessToken;
+        logger.info("The code received from authorization is : " + code);
+        salesforceAPI.requestForToken(code);
+
     }
 
-//    @PostMapping("/test")
-//    @ResponseBody
-//    public int test() throws IOException {
-//        return salesforceAPI.test();
-//    }
 }
