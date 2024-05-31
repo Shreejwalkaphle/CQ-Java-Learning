@@ -33,4 +33,11 @@ public class TestController {
         salesforceAPI.authenticate();
     }
 
+    @GetMapping("/getdata")
+    public String getData(){
+        logger.info("i am hit from salesforce");
+        logger.debug("i am hit from salesforce");
+        return "hello salesforce, how are you?";
+    }
+
 }

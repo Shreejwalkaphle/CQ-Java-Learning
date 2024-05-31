@@ -24,4 +24,7 @@ public class SalesforceConfig {
     @Value("${GRANT_TYPE}")
     private String grantType;
 
+    @Value("${COMMON_REST_RESOURCES_ENDPOINT}")
+    private String commonRestEndpoint;
+
 }

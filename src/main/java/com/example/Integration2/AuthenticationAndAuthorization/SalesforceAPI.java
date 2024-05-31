@@ -1,9 +1,13 @@
 package com.example.Integration2.AuthenticationAndAuthorization;
 
 import org.apache.hc.core5.http.ParseException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 @Component
@@ -14,7 +18,7 @@ public class SalesforceAPI {
     private SalesforceConfig salesforceConfig;
 
     //working for client crediantial oauth flow
-    public String authenticate() throws IOException, ParseException {
+    public void authenticate() throws IOException, ParseException {
 
         // Use the SalesforceConfig object to get consumer key and secret and grantType and baserUrlofOrg and TokenUrl
         String consumerKey = salesforceConfig.getConsumerKey();
@@ -33,7 +37,38 @@ public class SalesforceAPI {
         connection.getOutputStream().write(requestBody.getBytes());
         String response = new String(connection.getInputStream().readAllBytes());
         System.out.println("this string contains access token : :  "+response);
-        return response;
+
+        JSONObject jsonResponse = new JSONObject(response);
+        String accessToken = jsonResponse.getString("access_token");
+
+        System.out.println("Access Token: " + accessToken);
+        makeRequestToSalesforce(accessToken);
+    }
+
+    public void makeRequestToSalesforce(String accessToken){
+        try {
+            URL url = new URL(salesforceConfig.getOrgBaseUrl()+salesforceConfig.getCommonRestEndpoint()+"/giveData");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Authorization", "Bearer " + accessToken); // Add the correct access token
+            conn.setRequestProperty("Content-Type", "application/json");
+
+            int responseCode = conn.getResponseCode();
+            System.out.println("Response Code : " + responseCode);
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+            in.close();
+
+            System.out.println("Response: " + response);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
