@@ -1,6 +1,7 @@
 package com.example.Integration2.Controllers;
 
 import com.example.Integration2.services.EmailSender;
+import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class TestController {
     }
 
     @GetMapping("/sendEmail")
-    public String sendEmail(){
+    public String sendEmail() throws MessagingException {
         logger.info("send email");
         logger.debug("semd email");
         String response = emailSender.sendEmail();
