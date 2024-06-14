@@ -1,5 +1,6 @@
 package com.example.Integration2.Controllers;
 
+import com.example.Integration2.Models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
@@ -18,18 +19,9 @@ public class TestController {
         // Return a simple greeting message
         return "Hello! Welcome to the Java application's first endpoint.";
     }
-
-//    yesko lagi browser ma :: localhost:8080/user?username="shreejwal"
-    @GetMapping("/user")
-    public String getUser(@RequestParam String username){
-        return "user : "+ username;
+    
+    @PostMapping("/user")
+    public User setUser(@RequestBody User user){
+        return user;
     }
-
-//    yesko lagi browser ma :: localhost:8080/user/shreejwal
-    @GetMapping("/user/{username}")
-    public String getMeUser(@PathVariable String username){
-        return "user : "+ username;
-    }
-
-
 }
