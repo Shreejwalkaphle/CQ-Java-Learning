@@ -18,4 +18,18 @@ public class TestController {
         // Return a simple greeting message
         return "Hello! Welcome to the Java application's first endpoint.";
     }
+
+//    yesko lagi browser ma :: localhost:8080/user?username="shreejwal"
+    @GetMapping("/user")
+    public String getUser(@RequestParam String username){
+        return "user : "+ username;
+    }
+
+//    yesko lagi browser ma :: localhost:8080/user/shreejwal
+    @GetMapping("/user/{username}")
+    public String getMeUser(@PathVariable String username){
+        return "user : "+ username;
+    }
+
+
 }
