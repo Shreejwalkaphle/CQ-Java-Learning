@@ -21,10 +21,15 @@ public class TestController {
         return "Hello! Welcome to the Java application's first endpoint.";
     }
 
-    @PostMapping(value = "/user/{id}")
-    public User setUser(@PathVariable int id, @RequestBody User user){
-        System.out.println(id);
-        System.out.println(user.getUserName());
-        return user;
+
+    @GetMapping("/register")
+    public String showRegistrationForm(Model model) { // initialize model object and make it ready to send to the front end
+        model.addAttribute("user", new User()); // add the object that we want to bind with the data from the front end
+        return "registration_form_page"; // return a total web page. this web page when renders will automatically contain model object
+    }
+    @PostMapping(value = "/handleRegistration") // when front end hits submit this url gets executed. given, in its form action this url should be defined and in its from method post should be defined
+    public String handleRegistration(@ModelAttribute("user") User myUser){ // the binded object from front end is wrapped inside model object and recieved here
+        //logic to handle the data from frontend
+        return "success_page";
     }
 }
