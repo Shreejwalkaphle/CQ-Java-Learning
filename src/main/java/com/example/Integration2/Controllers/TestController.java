@@ -3,6 +3,7 @@ package com.example.Integration2.Controllers;
 import com.example.Integration2.Models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,9 +20,11 @@ public class TestController {
         // Return a simple greeting message
         return "Hello! Welcome to the Java application's first endpoint.";
     }
-    
-    @PostMapping("/user")
-    public User setUser(@RequestBody User user){
+
+    @PostMapping(value = "/user/{id}")
+    public User setUser(@PathVariable int id, @RequestBody User user){
+        System.out.println(id);
+        System.out.println(user.getUserName());
         return user;
     }
 }
