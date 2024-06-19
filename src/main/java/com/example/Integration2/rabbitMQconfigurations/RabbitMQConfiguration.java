@@ -8,45 +8,37 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+// there are always some issue related to RabbitAdmin while initializing
+// what happens is if you use RabbitAdmin then it is configured in Rabbit message broker not in the spring context.
+// the initialization of beans and declaration of queues do not syncronize step by step so there you can face issue .
+// it works if you restart the rabbit server from docker and restart the program by stopping
+// therefore to avoid these tedious task , i suggest to go for the beans type of declaration of queue , exchange and binding without using RabbitAdmin
+
 @Configuration
 public class RabbitMQConfiguration {
 
     @Autowired
     PropertiesFileReader fromPropertiesFile;
-
-//    properties file ma rabbit ko connection ko details spring le read garera
-//    rabbit message broker sanga connection create gariori yaha connectionfactory variable ma
-//    tyo rabbit message broker sanga ko connection ko instance lera ayera rakhdincha.
-
     @Autowired
     ConnectionFactory connectionFactory;
 
-//    yo connection ko instance le ani hamile RabbitAdmin ko instance create garna sakcham.
     @Bean
     public RabbitAdmin rabbitAdmin() {
         return new RabbitAdmin(connectionFactory);
     }
 
     public void declareQueueExchangesAndBindings(){
-//        declare three different queues
+//        declare  queue
         Queue queue1 = new Queue(fromPropertiesFile.getQueueName1());
         rabbitAdmin().declareQueue(queue1);
-        Queue queue2 = new Queue(fromPropertiesFile.getQueueName2());
-        rabbitAdmin().declareQueue(queue2);
-        Queue queue3 = new Queue(fromPropertiesFile.getQueueName3());
-        rabbitAdmin().declareQueue(queue3);
+
 
 //        declare a single directExchange
-        DirectExchange yourExchange = new DirectExchange(fromPropertiesFile.getExchangeName());
+        TopicExchange yourExchange = new TopicExchange(fromPropertiesFile.getExchangeName());
         rabbitAdmin().declareExchange(yourExchange);
 
-//        bind the three queues with single direct exchange
-//        define routekey for each queue, so that when the key comes exchange will know to which queue should the message be pushed.
+//        bind the queue with single Topic exchange
         Binding binding1 = BindingBuilder.bind(queue1).to(yourExchange).with(fromPropertiesFile.getRoutingKey1());
         rabbitAdmin().declareBinding(binding1);
-        Binding binding2 = BindingBuilder.bind(queue2).to(yourExchange).with(fromPropertiesFile.getRoutingKey2());
-        rabbitAdmin().declareBinding(binding2);
-        Binding binding3 = BindingBuilder.bind(queue3).to(yourExchange).with(fromPropertiesFile.getRoutingKey3());
-        rabbitAdmin().declareBinding(binding3);
     }
 }

@@ -14,7 +14,11 @@ public class RabbitMQMessageProducer {
 
 //    it will push the message to the queue 1 because we are passing the routing key that has binded the queue1 to the direct exchange.
     public void sendMessage1(String message) {
-        rabbitTemplate.convertAndSend(fromPropertiesFile.getExchangeName(), fromPropertiesFile.getRoutingKey1(), message);
+//        producer le queue exchange sanga bind bhayeko key ko pattern pass garyo bhaney pani queue ma push garna paucha
+//        exact jun key le bind bha ko ho tyei key chaidaina, mattern match bhaye ni huncha.
+//        yaha pattern match bha cha kina ki queue bind huda "key.of" bhanera routing key le bind bha cha
+//        tara aile hamile pathauda key.of.ram pathako cham  jasle "key.of" pattern lai match gareko cha.
+        rabbitTemplate.convertAndSend(fromPropertiesFile.getExchangeName(), "key.of.ram", message);
         System.out.println("message produced from rabbit MQ : producer 1 '" + message + "'");
 
         try {
@@ -26,31 +30,4 @@ public class RabbitMQMessageProducer {
         System.out.println("i am awake");
     }
 
-    //    it will push the message to the queue2  because we are passing the routing key that has binded the queue2 to the direct exchange.
-    public void sendMessage2(String message) {
-        rabbitTemplate.convertAndSend(fromPropertiesFile.getExchangeName(), fromPropertiesFile.getRoutingKey2(), message);
-        System.out.println("message produced from rabbit MQ : producer 2 '" + message + "'");
-
-        try {
-            Thread.sleep(5000);
-        }catch (Exception e){
-            e.getMessage();
-        }
-
-        System.out.println("i am awake");
-    }
-
-    //    it will push the message to the queue3 because we are passing the routing key that has binded the queue3 to the direct exchange.
-    public void sendMessage3(String message) {
-        rabbitTemplate.convertAndSend(fromPropertiesFile.getExchangeName(), fromPropertiesFile.getRoutingKey3(), message);
-        System.out.println("message produced from rabbit MQ : producer 3 '" + message + "'");
-
-        try {
-            Thread.sleep(5000);
-        }catch (Exception e){
-            e.getMessage();
-        }
-
-        System.out.println("i am awake");
-    }
 }
