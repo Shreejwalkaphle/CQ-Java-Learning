@@ -12,13 +12,9 @@ public class RabbitMQMessageProducer {
     @Autowired
     PropertiesFileReader fromPropertiesFile;
 
-//    it will push the message to the queue 1 because we are passing the routing key that has binded the queue1 to the direct exchange.
     public void sendMessage1(String message) {
-//        producer le queue exchange sanga bind bhayeko key ko pattern pass garyo bhaney pani queue ma push garna paucha
-//        exact jun key le bind bha ko ho tyei key chaidaina, mattern match bhaye ni huncha.
-//        yaha pattern match bha cha kina ki queue bind huda "key.of" bhanera routing key le bind bha cha
-//        tara aile hamile pathauda key.of.ram pathako cham  jasle "key.of" pattern lai match gareko cha.
-        rabbitTemplate.convertAndSend(fromPropertiesFile.getExchangeName(), "key.of.ram", message);
+        //no need to give routing key.
+        rabbitTemplate.convertAndSend(fromPropertiesFile.getExchangeName(), "",message);
         System.out.println("message produced from rabbit MQ : producer 1 '" + message + "'");
 
         try {

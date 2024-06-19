@@ -12,11 +12,10 @@ public class PropertiesFileReader {
     @Value("${rabbitmq.queueName1}")
     private String queueName1;
 
+    @Value("${rabbitmq.queueName2}")
+    private String queueName2;
 
     @Value("${rabbitmq.exchangeName}")
     private String exchangeName;
-
-    @Value("${rabbitmq.routingKey1}")
-    private String routingKey1;
 
 }
