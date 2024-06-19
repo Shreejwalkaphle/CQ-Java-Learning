@@ -27,8 +27,11 @@ public class TestController {
     }
 
     @GetMapping("/send")
-    public String sendMessage(@RequestParam String message) {
-        rabbitMQMessageProducer.sendMessage(message);
-        return "Message sent: " + message;
+    public String sendMessage(@RequestParam String message1,@RequestParam String message2,@RequestParam String message3) {
+        rabbitMQMessageProducer.sendMessage1(message1);
+        rabbitMQMessageProducer.sendMessage2(message2);
+        rabbitMQMessageProducer.sendMessage3(message3);
+
+        return "Message sent: " + message1 + "Message sent: " + message2 + "Message sent: " + message3;
     }
 }
