@@ -19,4 +19,13 @@ public class TestController {
         // Return a simple greeting message
         return "Hello! Welcome to the Java application's first endpoint.";
     }
+    @GetMapping("/getData")
+    @CrossOrigin("*")
+    public String getData() {
+        // Log a debug message
+        logger.info("Request received from angular at /getData endpoint.");
+
+        // Return a simple greeting message
+        return "{\"message\": \"Hello! Welcome from the Java application's first endpoint.\"}";
+    }
 }
