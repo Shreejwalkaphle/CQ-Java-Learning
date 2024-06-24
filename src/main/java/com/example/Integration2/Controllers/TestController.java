@@ -19,4 +19,14 @@ public class TestController {
         // Return a simple greeting message
         return "Hello! Welcome to the Java application's first endpoint.";
     }
+    @GetMapping("/jenkins")
+    @CrossOrigin("*")
+    public String jenkins() {
+        // Log a debug message
+        logger.info("Request received at /jenkins endpoint.");
+
+        // Return a simple greeting message
+        return "Hello! Welcome to the Java application's first CICD . by adding this method when i push this code to this branch, it will " +
+                "automatically detect the changes and starts to build the java application.";
+    }
 }
