@@ -2,7 +2,6 @@ package com.example.Integration2.services;
 
 import com.example.Integration2.models.Users;
 import com.example.Integration2.repository.UserRepository;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,15 +11,6 @@ import java.util.Optional;
 public class UserService {
     @Autowired
     UserRepository userRepository;
-
-    public String saveData(Users user){
-        userRepository.save(user);
-        return "user"+ user +" saved successfully";
-    }
-    public Optional<Users> retrieveData(int id){
-        Optional<Users> user = userRepository.findById(id);
-        return user;
-    }
 
     public String updateData(Users user) {
         Optional<Users> existingUserOpt = userRepository.findById(user.getId());
@@ -47,6 +37,16 @@ public class UserService {
         } else {
             return "User not found";
         }
+    }
+
+
+    public String saveData(Users user){
+        userRepository.save(user);
+        return "user"+ user +" saved successfully";
+    }
+    public Optional<Users> retrieveData(int id){
+        Optional<Users> user = userRepository.findById(id);
+        return user;
     }
 
 
