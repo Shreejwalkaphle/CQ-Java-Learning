@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 //input stream network connection ma bhayeko byte data read garna use huncha
 //read garna lai network connection ma byte data huna paryo ni ta
@@ -34,22 +35,36 @@ public class FileServices {
         connection.setDoOutput(true);
         connection.setRequestMethod("POST");
 
-//        file ko metadata lai connection ko header ma rakhera pathauney approach
-        connection.setRequestProperty("File-Name", file.getName());
-        connection.setRequestProperty("File-Type", "text/plain"); // Example file type
-        connection.setRequestProperty("File-Size", String.valueOf(file.length()));
-
 //        content type ma application/octet-stream bhaneko maile byte type ko data pathaudai chu hai bhaneko
         connection.setRequestProperty("Content-Type", "application/octet-stream");
 //        byte type ko data pathauna lai byte type ko data huna paryo ni ta hamisanga. tyo data preapare gareyko.
 //        data preapare garna lai hamisanga data file bhitra cha. file bata read garera teslai byte ma convert garna parcha.
-//        File Inputstream le sapai content file ko as byte read garcha, so tei bata tadniney
+//        File Inputstream le sapai content file ko as byte read garcha, so tei bata tadniney.
         FileInputStream fileInputStream = new FileInputStream(file);
+        byte[] filecontentinbyte = fileInputStream.readAllBytes();
+        byte[] contentAndMetadataCombinedInBytes = createCombinedData(file.getName(), "text/plain", file.length(), filecontentinbyte);
 
 //        connection object ma outputstream huncha. tyo outstream lai byte data pathayem bhaye connection ma hamro byte data rakhincha.
 
-        connection.getOutputStream().write(fileInputStream.readAllBytes());
+        connection.getOutputStream().write(contentAndMetadataCombinedInBytes);
 
         System.out.println("response from server is : "+connection.getResponseCode());
+    }
+
+    private byte[] createCombinedData(String fileName, String fileType, long fileSize, byte[] fileBytes) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        // Write metadata to output stream
+        outputStream.write(fileName.getBytes(StandardCharsets.UTF_8));
+        outputStream.write("\n".getBytes(StandardCharsets.UTF_8));
+        outputStream.write(fileType.getBytes(StandardCharsets.UTF_8));
+        outputStream.write("\n".getBytes(StandardCharsets.UTF_8));
+        outputStream.write(String.valueOf(fileSize).getBytes(StandardCharsets.UTF_8));
+        outputStream.write("\n".getBytes(StandardCharsets.UTF_8));
+
+        // Write file content to output stream
+        outputStream.write(fileBytes);
+
+        return outputStream.toByteArray();
     }
 }
