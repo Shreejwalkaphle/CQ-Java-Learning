@@ -29,25 +29,26 @@ public class FileServices {
 
 
 //        client preepare gareko.
-        String filePathauneyUrl = "http://localhost:9191/receiveFile";
+        String filePathauneyUrl = "http://localhost:8080/receiveFile";
         HttpURLConnection connection = (HttpURLConnection) new URL(filePathauneyUrl).openConnection();
         connection.setDoOutput(true);
         connection.setRequestMethod("POST");
+
+//        file ko metadata lai connection ko header ma rakhera pathauney approach
+        connection.setRequestProperty("File-Name", file.getName());
+        connection.setRequestProperty("File-Type", "text/plain"); // Example file type
+        connection.setRequestProperty("File-Size", String.valueOf(file.length()));
+
 //        content type ma application/octet-stream bhaneko maile byte type ko data pathaudai chu hai bhaneko
         connection.setRequestProperty("Content-Type", "application/octet-stream");
 //        byte type ko data pathauna lai byte type ko data huna paryo ni ta hamisanga. tyo data preapare gareyko.
 //        data preapare garna lai hamisanga data file bhitra cha. file bata read garera teslai byte ma convert garna parcha.
+//        File Inputstream le sapai content file ko as byte read garcha, so tei bata tadniney
         FileInputStream fileInputStream = new FileInputStream(file);
-        InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-        String line;
-        byte[] contentoffileasbytearray = null;
-        while ((line = bufferedReader.readLine()) != null) {
-            contentoffileasbytearray = line.getBytes();
-            System.out.println(line);
-        }
+
 //        connection object ma outputstream huncha. tyo outstream lai byte data pathayem bhaye connection ma hamro byte data rakhincha.
-        connection.getOutputStream().write(contentoffileasbytearray);
+
+        connection.getOutputStream().write(fileInputStream.readAllBytes());
 
         System.out.println("response from server is : "+connection.getResponseCode());
     }

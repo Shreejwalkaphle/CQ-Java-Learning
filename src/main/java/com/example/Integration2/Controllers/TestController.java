@@ -32,4 +32,19 @@ public class TestController {
         fileServices.createAndSendFile();
         return "file sent";
     }
+
+//    yo receive file method le server ko kaam garcha. server side ma yo code wa yei code ko replication rakhna parcha.replication bhanna ley server java ma bhaye java
+//    server aru language ma bhaye tei specific language ma yo endpoint hit huncha.
+    @PostMapping("/receiveFile")
+    public String receiveFile(@RequestHeader("File-Name") String fileName,
+                              @RequestHeader("File-Type") String fileType,
+                              @RequestHeader("File-Size") long fileSize,
+                              @RequestBody byte[] fileData) {
+        String receivedData = new String(fileData);
+        System.out.println(receivedData);
+        logger.info("File received: " + fileName);
+        logger.info("File type: " + fileType);
+        logger.info("File size: " + fileSize + " bytes");
+        return "file received";
+    }
 }
