@@ -1,11 +1,17 @@
 package com.example.Integration2.services;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.FileEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 
 //input stream network connection ma bhayeko byte data read garna use huncha
 //read garna lai network connection ma byte data huna paryo ni ta
@@ -13,11 +19,12 @@ import java.nio.charset.StandardCharsets;
 //network connection ma byte data write garna lai output stream use huncha.
 //network connection ma byte data write garna lai outputstream le, java side ma byte data prepared bha huna parcha.tyo prepared data lai write gardiney ho.
 
-//yo HttpUrlConnection use garda actual server call chai esko getOutputStream() method call huda huni raicha.
+//
 
 @Service
 public class FileServices {
     public void createAndSendFile() throws IOException {
+        String res="";
 //        emergency.txt naam ko file declare bhayo. yo java object huncha physical file bhaisaeko hudaina
         File file = new File("emergency.txt");
 //        createnewfile method execute bhaisaekey pachi physical file bancha.
@@ -28,43 +35,18 @@ public class FileServices {
             fileWriter.write("my name is shreejwal");
             fileWriter.flush();
 
+//            http client use garera client prepare gareko
+        try(CloseableHttpClient httpClient = HttpClients.createDefault()){
+            String serverUrl = "http://localhost:8080/receiveFile";
+            HttpPost httpPost = new HttpPost(serverUrl);
+            FileEntity entity = new FileEntity(file, ContentType.APPLICATION_OCTET_STREAM);
+            httpPost.setEntity(entity);
+            HttpResponse response = httpClient.execute(httpPost);
+            System.out.println("Server responded with status code: " + response.getStatusLine().getStatusCode());
+            res = res + response.getStatusLine().getStatusCode() + response.getEntity().toString()+new String(response.getEntity().getContent().readAllBytes());
+        }
+        catch (Exception e){}
 
-//        client preepare gareko.
-        String filePathauneyUrl = "http://localhost:8080/receiveFile";
-        HttpURLConnection connection = (HttpURLConnection) new URL(filePathauneyUrl).openConnection();
-        connection.setDoOutput(true);
-        connection.setRequestMethod("POST");
-
-//        content type ma application/octet-stream bhaneko maile byte type ko data pathaudai chu hai bhaneko
-        connection.setRequestProperty("Content-Type", "application/octet-stream");
-//        byte type ko data pathauna lai byte type ko data huna paryo ni ta hamisanga. tyo data preapare gareyko.
-//        data preapare garna lai hamisanga data file bhitra cha. file bata read garera teslai byte ma convert garna parcha.
-//        File Inputstream le sapai content file ko as byte read garcha, so tei bata tadniney.
-        FileInputStream fileInputStream = new FileInputStream(file);
-        byte[] filecontentinbyte = fileInputStream.readAllBytes();
-        byte[] contentAndMetadataCombinedInBytes = createCombinedData(file.getName(), "text/plain", file.length(), filecontentinbyte);
-
-//        connection object ma outputstream huncha. tyo outstream lai byte data pathayem bhaye connection ma hamro byte data rakhincha.
-
-        connection.getOutputStream().write(contentAndMetadataCombinedInBytes);
-
-        System.out.println("response from server is : "+connection.getResponseCode());
-    }
-
-    private byte[] createCombinedData(String fileName, String fileType, long fileSize, byte[] fileBytes) throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-        // Write metadata to output stream
-        outputStream.write(fileName.getBytes(StandardCharsets.UTF_8));
-        outputStream.write("\n".getBytes(StandardCharsets.UTF_8));
-        outputStream.write(fileType.getBytes(StandardCharsets.UTF_8));
-        outputStream.write("\n".getBytes(StandardCharsets.UTF_8));
-        outputStream.write(String.valueOf(fileSize).getBytes(StandardCharsets.UTF_8));
-        outputStream.write("\n".getBytes(StandardCharsets.UTF_8));
-
-        // Write file content to output stream
-        outputStream.write(fileBytes);
-
-        return outputStream.toByteArray();
+        System.out.println("Server responded with status code: " + res);
     }
 }
