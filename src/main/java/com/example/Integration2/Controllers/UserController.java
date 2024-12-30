@@ -1,6 +1,8 @@
 package com.example.Integration2.Controllers;
 
+import com.example.Integration2.models.Token;
 import com.example.Integration2.models.Users;
+import com.example.Integration2.services.JWTService;
 import com.example.Integration2.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,9 @@ import java.util.Optional;
 public class UserController {
 	@Autowired
 	UserService userService;
+
+	@Autowired
+	JWTService jwtService;
 	@PostMapping("/registerUser")
 	@CrossOrigin("http://localhost:4200")
 	public String setData(@RequestBody Users user) {
@@ -19,10 +24,12 @@ public class UserController {
 	}
 	@PostMapping("/login")
 	@CrossOrigin("http://localhost:4200")
-	public ResponseEntity <Users> login( @RequestBody Users users) {
+	public ResponseEntity <Token> login( @RequestBody Users users) {
 		Users user = userService.getUserByUsername(users.getUsername());
 		if (user != null) {
-			return ResponseEntity.ok(user);
+			Token  token = jwtService.generateJWTToken( user );
+			System.out.println(token.getToken() );
+			return ResponseEntity.ok(token);
 		} else {
 			return ResponseEntity.status( HttpStatus.NOT_FOUND).body(null);
 		}
