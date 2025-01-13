@@ -58,4 +58,8 @@ public class CustomerService {
 		customerRepository.save(customer);
 		return customer.getBalance();
 	}
+
+	public Customer getCustomerByAccountNumber(String accountNumber) {
+		return customerRepository.findByAccountNumber(accountNumber);
+	}
 }
